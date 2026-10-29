@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <title>len_vehiclerental</title>
+</head>
+<body>
+    <div id="hud" class="hidden">
+        <div class="hud-card">
+            <div class="hud-title"><i class="fas fa-car-side"></i><span data-i18n="ui_hud_title">AKTIVE MIETE</span></div>
+            <div class="hud-row"><span data-i18n="ui_hud_vehicle">Fahrzeug</span><b id="hud-vehicle">-</b></div>
+            <div class="hud-row"><span data-i18n="ui_hud_time">Restzeit</span><b id="hud-time">00:00</b></div>
+            <div class="hud-row"><span data-i18n="ui_hud_insurance">Versicherung</span><b id="hud-insurance">-</b></div>
+            <div class="hud-status" id="hud-status" data-i18n="ui_status_active">Aktiv</div>
+        </div>
+    </div>
+
+    <div id="app" class="hidden">
+        <div class="left">
+            <aside class="sidebar glass">
+                <div class="brand">
+                    <div class="brand-icon"><i class="fas fa-key"></i></div>
+                    <div>
+                        <div class="brand-name">RENT<span>AL</span></div>
+                        <div class="brand-station" id="station-name">-</div>
+                    </div>
+                </div>
+                <nav class="tabs">
+                    <button class="tab active" data-tab="rent"><i class="fas fa-car"></i><span data-i18n="ui_tab_rent">Mieten</span></button>
+                    <button class="tab hidden" data-tab="active" id="tab-active"><i class="fas fa-stopwatch"></i><span data-i18n="ui_tab_active">Aktive Miete</span></button>
+                    <button class="tab" data-tab="debts"><i class="fas fa-file-invoice-dollar"></i><span data-i18n="ui_tab_debts">Schulden</span><em id="debt-badge" class="badge hidden">!</em></button>
+                </nav>
+                <div class="categories" id="categories"></div>
+                <button class="close-btn" id="close-btn"><i class="fas fa-times"></i><span data-i18n="ui_close">Schließen</span></button>
+            </aside>
+
+            <main class="main">
+                <section class="view active" id="view-rent">
+                    <header class="view-head">
+                        <p class="kicker" data-i18n="ui_subtitle">Wähle dein Fahrzeug</p>
+                        <h1 id="category-title">-</h1>
+                    </header>
+                    <div class="vehicle-grid" id="vehicle-grid"></div>
+                </section>
+
+                <section class="view" id="view-active">
+                    <header class="view-head">
+                        <p class="kicker" data-i18n="ui_active_title">Aktuelle Miete</p>
+                        <h1 id="a-vehicle">-</h1>
+                    </header>
+                    <div id="active-empty" class="empty hidden">
+                        <i class="fas fa-circle-info"></i>
+                        <span data-i18n="ui_no_rental">Du hast aktuell kein Mietfahrzeug.</span>
+                    </div>
+                    <div id="active-body" class="active-body hidden">
+                        <div class="big-time">
+                            <span id="a-time" class="time">00:00</span>
+                            <em id="a-status">Aktiv</em>
+                        </div>
+                        <div class="stat-grid">
+                            <div class="stat"><small data-i18n="ui_plate">Kennzeichen</small><b id="a-plate">-</b></div>
+                            <div class="stat"><small data-i18n="ui_insurance">Versicherung</small><b id="a-insurance">-</b></div>
+                            <div class="stat"><small data-i18n="ui_deposit">Kaution</small><b id="a-deposit">-</b></div>
+                            <div class="stat"><small data-i18n="ui_km_driven">Gefahrene Kilometer</small><b id="a-km">0 km</b></div>
+                            <div class="stat"><small data-i18n="ui_damage">Schäden</small><b id="a-damage">-</b></div>
+                            <div class="stat"><small data-i18n="ui_late_fees">Verspätung</small><b id="a-late">-</b></div>
+                        </div>
+                        <div class="section-label" data-i18n="ui_extend_title">Miete verlängern</div>
+                        <div class="chip-grid" id="extend-list"></div>
+                        <button class="btn primary" id="extend-btn"><span data-i18n="ui_extend_button">Verlängern</span></button>
+                        <p class="hint" data-i18n="ui_return_hint">Stelle das Fahrzeug an der Rückgabestelle ab und drücke dort E.</p>
+                        <button class="btn ghost" id="return-btn"><i class="fas fa-undo"></i><span data-i18n="ui_return_button">Fahrzeug abgeben</span></button>
+                    </div>
+                </section>
+
+                <section class="view" id="view-debts">
+                    <header class="view-head">
+                        <p class="kicker" data-i18n="ui_debts_title">Offene Schulden</p>
+                        <h1 id="debt-total">-</h1>
+                    </header>
+                    <div id="debt-empty" class="empty hidden">
+                        <i class="fas fa-circle-check"></i>
+                        <span data-i18n="ui_no_debts">Du hast keine offenen Schulden.</span>
+                    </div>
+                    <div id="debt-content" class="hidden debt-content">
+                        <div class="debt-list" id="debt-list"></div>
+                        <button class="btn primary" id="pay-btn"><span data-i18n="ui_pay_button">Schulden begleichen</span></button>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+        <aside class="details glass" id="details">
+            <div id="detail-empty" class="detail-empty">
+                <i class="fas fa-hand-pointer"></i>
+                <p data-i18n="ui_select_hint">Wähle ein Fahrzeug, um Details und die Vorschau zu sehen.</p>
+            </div>
+            <div id="detail-body" class="hidden detail-body">
+                <div class="detail-media">
+                    <i class="fas fa-car-side media-icon"></i>
+                    <img id="d-img" alt="">
+                </div>
+                <div class="detail-title">
+                    <h2 id="d-name">-</h2>
+                    <small id="d-class">-</small>
+                </div>
+                <div class="facts">
+                    <div><small data-i18n="ui_base_price">Grundgebühr</small><b id="d-base">-</b></div>
+                    <div><small data-i18n="ui_km_price">Preis pro km</small><b id="d-km">-</b></div>
+                </div>
+                <div class="notice hidden" id="lock-note"><i class="fas fa-lock"></i><span data-i18n="ui_locked">Dir fehlt die Lizenz.</span></div>
+                <div class="section-label" data-i18n="ui_insurance">Versicherung</div>
+                <div class="choice-list" id="insurance-list"></div>
+                <div class="section-label" data-i18n="ui_duration">Mietdauer</div>
+                <div class="chip-grid" id="duration-list"></div>
+                <div class="summary">
+                    <div class="row"><span data-i18n="ui_rent_price">Miete</span><b id="d-rent">-</b></div>
+                    <div class="row"><span data-i18n="ui_insurance_cost">Versicherung</span><b id="d-insurance">-</b></div>
+                    <div class="row"><span data-i18n="ui_deposit">Kaution</span><b id="d-deposit">-</b></div>
+                    <div class="row total"><span data-i18n="ui_total">Gesamt</span><b id="d-total">-</b></div>
+                </div>
+                <button class="btn primary" id="rent-btn"><span data-i18n="ui_rent_button">Jetzt mieten</span></button>
+            </div>
+        </aside>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
